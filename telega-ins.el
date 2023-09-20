@@ -2467,7 +2467,7 @@ argument - MSG to insert additional information after header."
         ;; Admin badge if any
         (when (telega-user-p sender)
           (when-let ((admin (telega-chat-admin-get chat sender)))
-            (telega-ins--with-face 'telega-shadow
+            (telega-ins--with-face 'font-lock-builtin-face
               (telega-ins " ("
                           (or (telega-tl-str admin :custom_title)
                               (if (plist-get admin :is_owner)
@@ -2490,9 +2490,12 @@ argument - MSG to insert additional information after header."
         ;; Edited date
         (let ((edited-date (plist-get msg :edit_date)))
           (unless (zerop edited-date)
-            (telega-ins " " (telega-i18n "lng_edited")
-                        " " (telega-i18n "lng_schedule_at")
-                        " ")
+            (telega-ins
+             (propertize
+              (concat " "
+                      (telega-i18n "lng_edited") " "
+                      (telega-i18n "lng_schedule_at") " ")
+              'face '(:inherit button :overline t :underline t)))
             (telega-ins--date (plist-get msg :edit_date))))
 
         ;; Interaction info
