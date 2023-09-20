@@ -251,7 +251,16 @@ Format is:
          (today00 (telega--time-at00 current-ts ctime)))
     (if (and (> timestamp today00)
              (< timestamp (+ today00 (* 24 60 60))))
-        (telega-ins-fmt "%02d:%02d" (nth 2 dtime) (nth 1 dtime))
+        ;; (telega-ins-fmt "%02d:%02d" (nth 2 dtime) (nth 1 dtime))
+        ;; (propertize
+        (telega-ins-fmt "%02d:%02d:%02d"
+          (nth 2 dtime)
+          (nth 1 dtime)
+          (nth 0 dtime))
+      ;; 'face (list :box '(:line-width (-1 -1))
+      ;;             :weight 'thin
+      ;;             :foreground "#C93C29"
+      ;;             :background "#FEF6EE"))
 
       (let* ((week-day (nth 6 ctime))
              (mdays (+ week-day
@@ -261,15 +270,62 @@ Format is:
                             (- current-ts (* mdays 24 3600)))))
         (if (and (> timestamp week-start00)
                  (< timestamp (+ week-start00 (* 7 24 60 60))))
-            (telega-ins (nth (nth 6 dtime) telega-i18n-weekday-names))
-
+            ;;; < 1w, but > 1d
+            ;; (telega-ins (nth (nth 6 dtime) telega-i18n-weekday-names))
+            (telega-ins
+             (propertize
+              (format "%s " (nth (nth 6 dtime) telega-i18n-weekday-names))
+              'face (list :weight 'normal
+                          :foreground "#FEF6EE"
+                          :background "#C93C29"))
+             (propertize
+              (format "%02d:%02d:%02d"
+                      (nth 2 dtime)
+                      (nth 1 dtime)
+                      (nth 0 dtime))
+              'face (list :weight 'thin
+                          :foreground "#C93C29"
+                          :background "#FEF6EE"
+                          :overline t
+                          :underline t))
+             " ")
+          ;;; > 1w
+          ;; (telega-ins
+          ;;  (format-spec telega-old-date-format
+          ;;               (format-spec-make
+          ;;                ?D (format "%02d" (nth 3 dtime))
+          ;;                ?M (format "%02d" (nth 4 dtime))
+          ;;                ?Y (format "%02d" (- (nth 5 dtime) 2000)))))
           (telega-ins
-           (format-spec telega-old-date-format
-                        (format-spec-make
-                         ?D (format "%02d" (nth 3 dtime))
-                         ?M (format "%02d" (nth 4 dtime))
-                         ?Y (format "%02d" (- (nth 5 dtime) 2000)))))))
-      )))
+           (propertize
+            (format "%02d-%02d-%02d "
+                    (nth 5 dtime)
+                    (nth 4 dtime)
+                    (nth 3 dtime))
+            'face (list :weight 'normal
+                        :foreground "#C93C29"
+                        :background "#FEF6EE"
+                        :overline t
+                        :underline t))
+           ;; (propertize
+           ;;  (format " %s"
+           ;;          (nth (nth 6 dtime) telega-i18n-weekday-names))
+           ;;  'face (list :weight 'normal
+           ;;              :foreground "#FEF6EE"
+           ;;              :background "#C93C29"
+           ;;              :overline t
+           ;;              :underline t))
+           (propertize
+            (format "%02d:%02d:%02d"
+                    (nth 2 dtime)
+                    (nth 1 dtime)
+                    (nth 0 dtime))
+            'face (list :weight 'thin
+                        :foreground "#C93C29"
+                        :background "#FEF6EE"
+                        :overline t
+                        :underline t))
+           " "))))))
 
 (defun telega-ins--date-iso8601 (timestamp)
   "Insert TIMESTAMP in ISO8601 format."
