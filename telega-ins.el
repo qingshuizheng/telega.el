@@ -2755,7 +2755,11 @@ Return user, chat or string with the sender title."
           :content content)))
 
     (when reply-quote
-      (telega-ins--line-wrap-prefix (telega-symbol 'vertical-bar)
+      (telega-ins--line-wrap-prefix
+          (concat (propertize "| " 'face 'telega-entity-type-blockquote)
+                  (nerd-icons-mdicon "nf-md-format_quote_open"
+                                     :face '(:inherit telega-entity-type-blockquote))
+                  (propertize " " 'face 'telega-entity-type-blockquote))
         (telega-ins--with-face 'telega-entity-type-blockquote
           (telega-ins--fmt-text (plist-get reply-quote :text) replied-msg))
         (telega-ins "\n")))
